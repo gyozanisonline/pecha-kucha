@@ -1,0 +1,1527 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>סופראורגניזם · Mycelium Rosetta Stone</title>
+<meta name="description" content="MRS — Mycelium Rosetta Stone. Mid-semester recap, May 2026. Yoel Zajdner." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600&family=Inter:wght@400;500;600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #000000;
+    --bg-2: #0a0d0a;
+    --tile: #0d100d;
+    --line: #1a3820;
+    --line-soft: #14241a;
+    --jade: #1a4a2e;
+    --jade-mid: #3a7a52;
+    --amber: #c8922a;
+    --signal: #ff2e04;
+    --ink: #e2e8e2;
+    --muted: #8a9e8a;
+    --muted-2: #5a6a5a;
+    --display: #d4b3d8;   /* lavender — Hebrew display only, sparingly */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; scroll-snap-type: y mandatory; }
+  html, body {
+    background: var(--bg); color: var(--ink);
+    font-family: 'Ezer Shemesh TRIAL ONLY', 'Arfilit', 'Heebo', 'Inter', system-ui, sans-serif;
+    font-weight: 400; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { direction: rtl; }
+  /* Language toggle visibility — HE default; switches via <html lang="..."> */
+  html[lang="he"] .t-en { display: none; }
+  html[lang="en"] .t-he { display: none; }
+  html[lang="en"] body { direction: ltr; text-align: left; }
+  html[lang="en"] .narrative,
+  html[lang="en"] .vision,
+  html[lang="en"] .premise-wrap,
+  html[lang="en"] .slide-head { text-align: center; }
+  html[lang="en"] h1, html[lang="en"] h2 {
+    font-family: 'Fraunces', 'Inter', serif;
+  }
+  /* Each slide locks to a full viewport — clean snap navigation on big screens */
+  .slide { scroll-snap-align: start; scroll-snap-stop: always; }
+  .en      { font-family: 'Inter', sans-serif; direction: ltr; unicode-bidi: isolate; }
+  .serif   { font-family: 'Fraunces', serif; direction: ltr; unicode-bidi: isolate; }
+  .num     { font-family: 'Fraunces', serif; font-style: italic; direction: ltr; unicode-bidi: isolate; }
+  .container { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+  h1, h2, h3, h4 {
+    font-family: 'Ezer Shemesh TRIAL ONLY', 'Arfilit', 'Heebo', sans-serif;
+    font-weight: 300; letter-spacing: -0.005em;
+    line-height: 1.05; color: var(--ink);
+  }
+
+  /* ─── Brief nav (sticky, hidden until past hero) ─────────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    background: rgba(10,15,10,0.72);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line-soft);
+    opacity: 0; transform: translateY(-100%);
+    transition: opacity .4s ease, transform .4s ease;
+  }
+  .nav.show { opacity: 1; transform: none; }
+  .nav-inner {
+    max-width: 1180px; margin: 0 auto; padding: 14px 40px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .nav-brand {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--muted); font-family: 'Inter', sans-serif;
+  }
+  .nav-brand b { color: var(--ink); font-weight: 600; }
+  .nav ul { list-style: none; display: flex; gap: 26px; }
+  .nav a {
+    color: var(--muted); text-decoration: none;
+    font-size: 12px; letter-spacing: 0.04em;
+    display: inline-flex; align-items: baseline; gap: 8px;
+    transition: color .2s;
+  }
+  .nav a:hover { color: var(--ink); }
+  .nav a .letter {
+    font-family: 'Fraunces', serif; font-style: italic;
+    color: var(--amber); font-size: 14px;
+  }
+  @media (max-width: 800px) {
+    .nav-brand { display: none; }
+    .nav ul { gap: 14px; flex: 1; justify-content: space-between; }
+    .nav a span:not(.letter) { display: none; }
+  }
+
+  /* ─── Slide section — modeled after a 1920×1080 PDF slide ────── */
+  .slide {
+    min-height: 100vh;
+    padding: clamp(48px, 7vh, 110px) 0 clamp(40px, 5vh, 90px);
+    display: flex; flex-direction: column; justify-content: center;
+    border-bottom: 1px solid var(--line-soft);
+    position: relative;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  .slide.tight { min-height: auto; padding: clamp(40px, 5vh, 80px) 0; }
+  /* opt-in: slides that are intentionally taller than viewport */
+  .slide.long { min-height: 100vh; }
+
+  /* PDF page 1 — Hero */
+  .hero {
+    text-align: center;
+    padding-top: clamp(60px, 9vh, 140px);
+  }
+  .hero-mycelium {
+    width: min(720px, 72vw);
+    max-height: 40vh;
+    aspect-ratio: 600 / 480;
+    margin: clamp(24px, 4vh, 56px) auto clamp(24px, 4vh, 56px);
+    background: url('images/seminar/src-1-mycelium.jpg') center / contain no-repeat;
+  }
+  h1 {
+    font-size: clamp(56px, 13vmin, 220px);
+    font-weight: 300;
+    color: var(--display);
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  .hero .slash {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(20px, 2.4vw, 28px);
+    color: var(--muted);
+    margin: 36px 0 20px;
+  }
+  .hero .en-sub {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(20px, 2.6vw, 32px);
+    color: var(--ink); font-weight: 400;
+    direction: ltr;
+    opacity: 0.92;
+  }
+  .hero .meta {
+    margin-top: clamp(28px, 5vh, 80px);
+    font-size: 11px;
+    color: var(--muted);
+    display: inline-flex; gap: 40px;
+    flex-wrap: wrap; justify-content: center;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* PDF page 2 — Premise paragraph + wood cross-section */
+  .premise-wrap {
+    max-width: 920px; margin: 0 auto;
+    text-align: center;
+  }
+  .premise-text {
+    font-size: clamp(20px, 3vmin, 44px);
+    line-height: 1.55;
+    color: var(--display);
+    font-weight: 300;
+    max-width: min(1100px, 80vw);
+    margin: 0 auto clamp(28px, 5vh, 70px);
+  }
+  .premise-figure {
+    width: min(360px, 48vw); aspect-ratio: 1;
+    max-height: 36vh;
+    margin: 0 auto;
+    background: url('images/seminar/src-2-tree.jpg') center / contain no-repeat;
+    filter: grayscale(0.7) contrast(1.15);
+    opacity: 0.86;
+  }
+
+  /* Slide headers (pages 3+) — PDF places title TOP CENTER, modest scale */
+  .slide-head {
+    margin-bottom: clamp(24px, 5vh, 64px);
+    text-align: center;
+  }
+  .slide-head h2 {
+    font-size: clamp(28px, 4.5vmin, 72px);
+    color: var(--display);
+    font-weight: 300;
+    letter-spacing: 0;
+  }
+  /* Brief letter — marks the 5 mandatory sections (א ב ג ד ה) */
+  .brief-letter {
+    display: block;
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(36px, 5vw, 64px);
+    color: var(--signal);
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+
+  /* Body text — slide narrative. PDF body sits at ~24px, centered */
+  .narrative {
+    max-width: min(900px, 75vw); margin: 0 auto;
+    font-size: clamp(18px, 2.3vmin, 34px);
+    line-height: 1.7;
+    color: var(--ink); font-weight: 400;
+    text-align: center;
+  }
+  .narrative p + p { margin-top: 1.2em; }
+  .narrative .hl     { color: var(--amber); }
+  .narrative .lav    { color: var(--display); }
+  .narrative .signal { color: var(--signal); }
+  .narrative.start   { text-align: start; }  /* opt-out when needed */
+
+  /* Inline citation anchor — small italic note under a statement */
+  .narrative .anchor {
+    display: block;
+    margin-top: 14px;
+    font-size: 0.5em;
+    color: var(--muted);
+    direction: ltr;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+  }
+  .narrative .anchor b { color: var(--ink); font-weight: 600; }
+  .narrative .anchor i { color: var(--amber); font-family: 'Fraunces', serif; font-style: italic; }
+
+  /* Figure under narrative */
+  .figure { margin-top: 56px; max-width: 980px; margin-left: auto; margin-right: auto; }
+  .figure img { width: 100%; display: block; }
+  .figure figcaption {
+    margin-top: 14px;
+    font-size: 12px; color: var(--muted);
+    letter-spacing: 0.04em;
+    direction: ltr; text-align: right;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Forest composition — cliffs anchor bottom corners of slide, text floats above */
+  .slide.has-cliffs .container { position: relative; z-index: 2; }
+  .forest-composition {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .forest-composition img {
+    position: absolute;
+    bottom: 0;
+    height: 78%;
+    width: auto;
+    display: block;
+    user-select: none;
+  }
+  .forest-composition .cliff-L { left: 0; }
+  .forest-composition .cliff-R { right: 0; }
+  @media (max-width: 900px) {
+    .forest-composition img { height: 60%; }
+  }
+  @media (max-width: 600px) {
+    .forest-composition img { height: 42%; opacity: 0.6; }
+  }
+
+  /* Organism→algorithm composition — Tokyo + physarum side-by-side, like PDF p.4 */
+  .algo-composition {
+    max-width: 1180px; margin: clamp(24px, 4vh, 56px) auto 0;
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(24px, 3vw, 48px);
+    direction: ltr;
+  }
+  .algo-composition figure { display: flex; flex-direction: column; min-height: 0; }
+  .algo-composition img {
+    width: 100%; height: auto; display: block;
+    max-height: 38vh;
+    object-fit: contain;
+  }
+  .algo-composition figcaption {
+    margin-top: 16px;
+    font-size: 11px; color: var(--muted);
+    letter-spacing: 0.04em;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+  }
+  @media (max-width: 700px) { .algo-composition { grid-template-columns: 1fr; gap: 32px; } }
+
+  /* Citations strip — PDF places these BOTTOM RIGHT in italic */
+  .cites {
+    margin: 80px 0 0 auto;
+    max-width: 560px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 11px; color: var(--muted);
+    direction: ltr; text-align: right;
+    line-height: 2; font-family: 'Inter', sans-serif;
+  }
+  .cites b { color: var(--ink); font-weight: 600; }
+  .cites i { color: var(--amber); font-style: italic; font-family: 'Fraunces', serif; }
+
+  /* Big quote — research question */
+  .quote-block {
+    max-width: 940px; margin: 56px auto 0;
+    padding: 0 8px;
+  }
+  .quote-block .q {
+    font-size: clamp(28px, 4.8vmin, 84px);
+    font-weight: 300;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    text-align: center;
+  }
+  .quote-block .q::before {
+    content: '"'; color: var(--jade-mid);
+    font-family: 'Fraunces', serif;
+    font-size: 1.3em; line-height: 0;
+    vertical-align: -0.3em; margin-left: -0.06em;
+  }
+  .quote-block .q::after {
+    content: '"'; color: var(--jade-mid);
+    font-family: 'Fraunces', serif;
+    font-size: 1.3em; line-height: 0;
+    vertical-align: -0.3em;
+  }
+
+  /* PDF page 5 — seminar structure (four-part list, but shown as anchor cards) */
+  .structure-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    max-width: 1120px; margin: 0 auto;
+  }
+  @media (max-width: 900px) { .structure-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 560px) { .structure-grid { grid-template-columns: 1fr; } }
+  .struct-card {
+    background: var(--tile);
+    border: 1px solid var(--line);
+    border-top: 2px solid var(--amber);
+    padding: 28px 24px;
+    display: flex; flex-direction: column;
+    min-height: 220px;
+  }
+  .struct-card .letter {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 36px; color: var(--signal);
+    line-height: 1;
+    margin-bottom: 18px;
+  }
+  .struct-card p {
+    font-size: 14px; color: var(--ink);
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  /* Editable placeholder */
+  .needs-input {
+    margin: 24px auto 0;
+    max-width: 820px;
+    padding: 16px 20px;
+    border: 1px dashed var(--line);
+    background: rgba(200,146,42,0.04);
+    font-size: 13px; color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    direction: ltr; text-align: left;
+  }
+  .needs-input b { color: var(--amber); font-weight: 600; }
+  .needs-input code { color: var(--ink); font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+
+  /* PDF page 6 — bibliography */
+  /* Research orbit — supporting bibliography wrapped around the יער-כאורגניזם statement */
+  .research-orbit {
+    margin: clamp(20px, 3.5vh, 40px) auto 0;
+    max-width: 1180px;
+    direction: ltr;
+    text-align: center;
+  }
+  .research-orbit .orbit-label {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: clamp(8px, 1.5vh, 16px);
+  }
+  .research-orbit .orbit-items {
+    display: flex; flex-wrap: wrap;
+    gap: 10px 14px;
+    justify-content: center;
+    align-items: center;
+  }
+  .research-orbit .orbit-item {
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px; line-height: 1.5;
+    color: var(--muted);
+    padding: 6px 12px;
+    border: 1px solid rgba(58, 122, 82, 0.18);
+    border-radius: 999px;
+    background: rgba(26, 74, 46, 0.04);
+    transition: color 200ms ease, border-color 200ms ease;
+  }
+  .research-orbit .orbit-item b { color: var(--ink); font-weight: 600; }
+  .research-orbit .orbit-item i { color: var(--amber); font-family: 'Fraunces', serif; font-style: italic; }
+  .research-orbit .orbit-item.primary {
+    border-color: rgba(200, 146, 42, 0.45);
+    background: rgba(200, 146, 42, 0.06);
+    color: var(--ink);
+  }
+  @media (max-width: 780px) {
+    .research-orbit .orbit-item { font-size: 10.5px; padding: 5px 10px; }
+  }
+
+  /* Bilingual section label — small header above each block in slide 5 */
+  .section-label {
+    display: flex; align-items: baseline; justify-content: center;
+    gap: 14px;
+    margin: clamp(40px, 6vh, 80px) auto clamp(18px, 2.5vh, 28px);
+    direction: ltr;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    color: var(--amber);
+  }
+  .section-label:first-of-type { margin-top: 0; }
+  .section-label .he {
+    font-family: 'Ezer Shemesh TRIAL ONLY', 'Arfilit', 'Heebo', sans-serif;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--ink);
+    font-weight: 400;
+    direction: rtl;
+  }
+  .section-label .sep { color: var(--muted-2); }
+
+  /* Gemini grid */
+  .grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 14px; direction: ltr;
+  }
+  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--tile);
+    border: 1px solid var(--line-soft);
+    overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: border-color .3s, transform .3s;
+  }
+  .card:hover { border-color: var(--jade); transform: translateY(-2px); }
+  .card .img {
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, #14241a 0%, #0c1a0c 100%);
+    position: relative; overflow: hidden;
+  }
+  .card .img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    filter: contrast(1.04);
+  }
+  .card .img .ph {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted-2);
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 28px;
+  }
+  .card .meta-row {
+    padding: 12px 14px 4px;
+    font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--amber);
+    display: flex; justify-content: space-between;
+    font-family: 'Inter', sans-serif;
+  }
+  .card p {
+    padding: 4px 14px 14px;
+    font-size: 11px; line-height: 1.5;
+    color: var(--ink); font-family: 'Inter', sans-serif;
+  }
+
+  /* 3D viewer */
+  .viewer-wrap { background: var(--bg-2); border: 1px solid var(--line); direction: ltr; }
+  .viewer-tabs { display: flex; flex-wrap: wrap; border-bottom: 1px solid var(--line); }
+  .viewer-tab {
+    padding: 14px 18px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer;
+    background: none; border: none;
+    border-right: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+    transition: all .2s;
+  }
+  .viewer-tab:hover { color: var(--ink); background: rgba(58,122,82,0.08); }
+  .viewer-tab.active { color: var(--amber); background: var(--bg); }
+  .viewer-canvas-wrap { position: relative; }
+  #viewer-canvas { width: 100%; height: 600px; display: block; background: var(--bg); cursor: grab; }
+  #viewer-canvas:active { cursor: grabbing; }
+  .viewer-controls {
+    display: flex; gap: 32px; padding: 14px 20px;
+    border-top: 1px solid var(--line);
+    flex-wrap: wrap; align-items: center;
+  }
+  .mode-toggle { display: inline-flex; border: 1px solid var(--line); background: var(--bg); }
+  .mode-toggle button {
+    background: none; border: none;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .mode-toggle button.active { background: var(--amber); color: var(--bg); }
+  .mode-toggle button:not(.active):hover { color: var(--ink); }
+  .viewer-controls label {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); flex: 1; min-width: 220px;
+    font-family: 'Inter', sans-serif;
+  }
+  .viewer-controls input[type=range] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 2px; background: var(--line); outline: none; cursor: pointer;
+  }
+  .viewer-controls input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; background: var(--amber);
+    border-radius: 50%; cursor: pointer;
+  }
+  .viewer-controls input[type=range]::-moz-range-thumb {
+    width: 14px; height: 14px; background: var(--amber);
+    border-radius: 50%; cursor: pointer; border: none;
+  }
+  .viewer-controls .val {
+    font-family: 'Fraunces', serif; color: var(--ink);
+    font-size: 13px; min-width: 36px; text-align: right;
+    letter-spacing: 0; text-transform: none;
+  }
+  .viewer-info {
+    padding: 14px 20px;
+    font-size: 11px; color: var(--muted);
+    display: flex; justify-content: space-between; gap: 16px;
+    flex-wrap: wrap; border-top: 1px solid var(--line);
+    font-family: 'Inter', sans-serif;
+  }
+  .viewer-info .name {
+    color: var(--amber);
+    font-family: 'Fraunces', serif; font-style: italic; font-size: 15px;
+  }
+
+  /* POPX placeholder grid */
+  .popx-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 18px; direction: ltr;
+    isolation: isolate;
+  }
+  @media (max-width: 900px) { .popx-grid { grid-template-columns: 1fr; } }
+
+  /* Slot reserves the grid cell so layout never collapses when the card pops out */
+  .popx-slot {
+    position: relative;
+    aspect-ratio: 1 / 1;
+  }
+  .popx-card {
+    position: absolute; inset: 0;
+    background: #000;
+    border: 1px solid var(--line);
+    overflow: hidden;
+    font-family: 'Inter', sans-serif;
+    transition: opacity .35s ease, filter .35s ease;
+    cursor: zoom-in;
+  }
+  .popx-card video {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .popx-card .meta {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    padding: 14px 18px 16px;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.55) 60%, transparent 100%);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .popx-card .label {
+    font-size: 10px; letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 6px;
+  }
+  .popx-card .name {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: clamp(18px, 1.7vw, 22px); color: var(--ink); line-height: 1.15;
+  }
+
+  /* Bedazzle on hover — card lifts to viewport center, ~85vmin big; siblings fade */
+  @media (hover: hover) {
+    .popx-slot:hover .popx-card {
+      position: fixed;
+      inset: auto;
+      top: 50%; left: 50%;
+      width: min(85vmin, 1100px);
+      height: min(85vmin, 1100px);
+      transform: translate(-50%, -50%);
+      z-index: 200;
+      border-color: rgba(200,146,42,0.55);
+      box-shadow:
+        0 40px 140px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(200,146,42,0.4),
+        0 0 0 100vmax rgba(0,0,0,0.55);
+      animation: popx-pop .38s cubic-bezier(.2,.7,.15,1);
+      cursor: zoom-out;
+    }
+    .popx-slot:hover .popx-card .meta {
+      padding: 22px 28px 26px;
+    }
+    .popx-slot:hover .popx-card .label {
+      font-size: 12px;
+    }
+    .popx-slot:hover .popx-card .name {
+      font-size: clamp(26px, 2.4vw, 36px);
+    }
+    .popx-grid:has(.popx-slot:hover) .popx-slot:not(:hover) .popx-card {
+      opacity: 0.18;
+      filter: blur(4px) saturate(0.6);
+    }
+  }
+  @keyframes popx-pop {
+    from {
+      transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0.4;
+    }
+    to {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Architecture diagram */
+  .arch {
+    max-width: 1120px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 32px; align-items: stretch;
+    direction: ltr;
+  }
+  .arch-card {
+    background: var(--tile); border: 1px solid var(--line);
+    padding: clamp(20px, 3vh, 36px) clamp(20px, 2.5vw, 30px);
+    min-height: clamp(220px, 38vh, 340px);
+    display: flex; flex-direction: column;
+  }
+  .arch-card .label {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 18px;
+  }
+  .arch-card h3 {
+    font-size: 32px; margin-bottom: 10px;
+    color: var(--ink);
+    font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+  }
+  .arch-card .role {
+    font-style: italic; color: var(--muted);
+    margin-bottom: 28px;
+    font-family: 'Fraunces', serif; font-size: 14px;
+  }
+  .arch-card.brain { border-top: 2px solid var(--jade-mid); }
+  .arch-card.body  { border-top: 2px solid var(--amber); }
+  .arch-card ul {
+    list-style: none; font-size: 13px;
+    color: var(--ink); font-family: 'Inter', sans-serif;
+  }
+  .arch-card li {
+    padding: 9px 0; border-bottom: 1px dotted var(--line);
+  }
+  .arch-card li:last-child { border-bottom: none; }
+  .arrow {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-width: 140px;
+  }
+  .arrow .pipe {
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 14px;
+  }
+  .arrow .line {
+    width: 100%; height: 1px;
+    background: var(--jade-mid); position: relative;
+  }
+  .arrow .line::after {
+    content: '→'; position: absolute;
+    right: -2px; top: -11px;
+    color: var(--amber); font-size: 18px;
+  }
+  .arrow .freq {
+    font-size: 10px; color: var(--muted);
+    margin-top: 12px; letter-spacing: 0.05em;
+    font-family: 'Inter', sans-serif;
+  }
+  @media (max-width: 900px) {
+    .arch { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); min-height: 80px; }
+  }
+  .arch-note {
+    margin-top: clamp(20px, 3vh, 32px);
+    text-align: center;
+    max-width: 760px;
+    margin-left: auto; margin-right: auto;
+    direction: ltr;
+  }
+  .arch-note p {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+    letter-spacing: 0.02em;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Novelty — big statement */
+  .novelty {
+    max-width: 900px; margin: 0 auto;
+    padding: 24px 0;
+    text-align: center;
+  }
+  .novelty p {
+    font-size: clamp(20px, 3vmin, 44px);
+    line-height: 1.45; color: var(--ink);
+    font-weight: 300;
+  }
+  .novelty p + p { margin-top: 1.4em; }
+  .novelty .stamp {
+    color: var(--signal);
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 16px; letter-spacing: 0.1em;
+    display: block; margin-top: 64px;
+  }
+
+  /* Closing — סקיצת מערכת + vision */
+  .closing { text-align: center; }
+  .sketch-block {
+    width: 100%; max-width: 1180px;
+    margin: 0 auto clamp(24px, 4vh, 48px);
+    aspect-ratio: 16 / 9;
+    max-height: 46vh;
+    border: 1px solid var(--line);
+    background: var(--tile);
+    position: relative;
+    overflow: hidden;
+  }
+  .sketch-block img,
+  .sketch-block video {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+    background: #000;
+  }
+  .sketch-placeholder {
+    position: absolute; inset: 0;
+    display: none;
+    align-items: center; justify-content: center;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 18px, rgba(58,122,82,0.05) 18px 19px),
+      var(--tile);
+  }
+  .sketch-placeholder .ph-frame {
+    text-align: center;
+    padding: 32px 48px;
+    border: 1px dashed var(--line);
+    background: rgba(0,0,0,0.4);
+  }
+  .sketch-placeholder .ph-label {
+    font-size: clamp(18px, 2.4vmin, 28px);
+    color: var(--display); font-weight: 400;
+    margin-bottom: 12px;
+  }
+  .sketch-placeholder .ph-note {
+    font-size: 12px; color: var(--muted);
+    font-family: 'Inter', sans-serif;
+    letter-spacing: 0.04em;
+    margin-bottom: 10px;
+    direction: ltr;
+  }
+  .sketch-placeholder .ph-path {
+    font-size: 11px; color: var(--amber);
+    font-family: 'Inter', sans-serif;
+    direction: ltr;
+  }
+  .sketch-placeholder code {
+    font-family: 'Inter', monospace;
+    background: rgba(200,146,42,0.08);
+    padding: 2px 6px; border-radius: 2px;
+  }
+  .vision {
+    max-width: min(1040px, 86vw); margin: 0 auto;
+    text-align: center;
+  }
+  .vision p {
+    font-size: clamp(16px, 2.1vmin, 26px);
+    line-height: 1.65;
+    color: var(--ink); font-weight: 400;
+  }
+  .vision .em { color: var(--display); font-weight: 500; }
+
+  /* Footer */
+  footer {
+    padding: 88px 0 64px; background: #050805;
+    border-top: 1px solid var(--line-soft);
+  }
+  footer .row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 40px;
+  }
+  footer p { font-size: 12px; color: var(--muted); line-height: 1.8; }
+  footer .col { flex: 1; min-width: 220px; }
+  footer .col h4 {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--amber); margin-bottom: 18px; font-weight: 500;
+  }
+
+  /* Loader inside 3D canvas */
+  .loader {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--amber);
+    font-family: 'Fraunces', serif; font-style: italic;
+    font-size: 14px; letter-spacing: 0.1em;
+    pointer-events: none;
+  }
+
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(12px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+    .nav { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+
+<!-- Minimal brand mark — appears on scroll past hero -->
+<nav class="nav" id="nav" aria-label="Brand">
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <b>MRS</b> ·
+      <span class="t-he">סופראורגניזם · יואל זיידנר</span><span class="t-en">Superorganism · Yoel Zajdner</span>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 1 — Title (PDF page 1)
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide hero">
+  <div class="container">
+    <h1><span class="t-he">סופראורגניזם</span><span class="t-en">Superorganism</span></h1>
+    <div class="hero-mycelium"></div>
+    <div class="slash">/</div>
+    <div class="en-sub">Mycelium Rosetta Stone</div>
+    <div class="meta">
+      <span class="t-he">יואל זיידנר</span><span class="t-en">Yoel Zajdner</span>
+      <span class="t-he">ויצו חיפה · שנה ד׳</span><span class="t-en">WIZO Haifa · Year 4</span>
+      <span class="en">May 2026</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 2 — Premise statement (PDF page 2)
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide">
+  <div class="container">
+    <div class="premise-wrap reveal">
+      <p class="premise-text">
+        <span class="t-he">עקרונות הארכיטקטורה המרחבית של פטריות ועובש הפיזארום ביערות העד, כמודל לחידוש הקישוריות וההשתלבות בין האדם לטבע ובין האדם לעצמו.</span>
+        <span class="t-en">The spatial architecture principles of fungi and physarum slime mould in primeval forests — as a model for renewing connectivity and integration between humans and nature, and between humans and themselves.</span>
+      </p>
+      <div class="premise-figure"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 3 — The forest as organism (PDF page 3)
+     Cliffs anchor the bottom-left + bottom-right corners as background;
+     text floats in the dark sky above.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide has-cliffs">
+  <div class="forest-composition" aria-hidden="true">
+    <img class="cliff-L" src="images/seminar/src-3-cliff-L.jpg" alt="">
+    <img class="cliff-R" src="images/seminar/src-3-cliff-R.jpg" alt="">
+  </div>
+
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">היער כאורגניזם</span><span class="t-en">The Forest as an Organism</span></h2>
+    </div>
+
+    <div class="narrative reveal">
+      <p>
+        <span class="t-he">היום, אנו מבינים שהיער הוא לא רק אסופת עצים וחיות, אלא אורגניזם חי שמבצע החלטות ומכלכל את עצמו ואת כל חלקיו ממש כמו שאנחנו דואגים לאכול ולשתות.</span>
+        <span class="t-en">We now understand that the forest is not merely a collection of trees and animals, but a living organism that makes decisions and sustains itself and all its parts — just as we care to eat and drink.</span>
+      </p>
+      <p>
+        <span class="t-he">עצים בצד אחד של היער דואגים לעצים בצד שני של היער דרך רשת סבוכה של מתווכים ובראשן הפטריות. להן רשת תקשורת מורכבת הנקראת בקהילה המדעית: <span class="en serif">Wood Wide Web</span>.</span>
+        <span class="t-en">Trees on one side of the forest care for trees on the other side, through an intricate network of mediators — chief among them, fungi. They form a complex communication network the scientific community calls the <span class="serif">Wood Wide Web</span>.</span>
+      </p>
+    </div>
+
+    <div class="research-orbit reveal" aria-label="supporting research">
+      <div class="orbit-label">supporting research</div>
+      <div class="orbit-items">
+        <span class="orbit-item primary"><b>The Hidden Life of Trees</b> · Wohlleben · <i>2015</i></span>
+        <span class="orbit-item primary"><b>Inter-plant communication through mycorrhizal networks</b> · Simard et al. · <i>2015</i></span>
+        <span class="orbit-item primary"><b>Fungal States of Minds</b> · Adamatzky · <i>2022</i></span>
+        <span class="orbit-item"><b>Language of fungi derived from electrical spiking activity</b> · Adamatzky · <i>2022</i></span>
+        <span class="orbit-item"><b>Biocommunication of Fungi</b> · Witzany · <i>2012</i></span>
+        <span class="orbit-item"><b>The Fungal Grid</b> · Boddy et al. · <i>2009</i></span>
+        <span class="orbit-item"><b>Biological solutions to transport network design</b> · Bebber et al. · <i>2007</i></span>
+        <span class="orbit-item"><b>Rules for Biologically Inspired Adaptive Network Design</b> · Tero et al. · <i>2010</i></span>
+        <span class="orbit-item"><b>Slime mold uses an externalized spatial "memory" to navigate</b> · Reid et al. · <i>2012</i></span>
+        <span class="orbit-item"><b>Stepwise slime mould growth as a template for urban design</b> · Kay · <i>2022</i></span>
+        <span class="orbit-item"><b>Myco-remediation of plastic pollution</b> · Sehgal et al. · <i>2022</i></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE 4 — From organism to algorithm (PDF page 4)
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide">
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">מאורגניזם לאלגוריתם</span><span class="t-en">From Organism to Algorithm</span></h2>
+    </div>
+
+    <div class="narrative reveal">
+      <p>
+        <span class="t-he">ב־<span class="num">2015</span> נעשה ניסוי בטוקיו, יפן — עובש הפיזארום שרטט ותכנן את רשת הרכבות העירונית, ופתר בעיות תכנוניות בצורה שבמקומות מסוימים השתוותה למהנדסים ועקפה אותם: רשת יציבה, דינמית, ויעילה.</span>
+        <span class="t-en">In <span class="num">2015</span>, an experiment in Tokyo, Japan — physarum slime mould drew and planned the city's subway network, solving planning problems in ways that, in places, matched and surpassed the engineers: a stable, dynamic, efficient network.</span>
+      </p>
+      <p>
+        <span class="t-he">ב־<span class="num">2022</span> הצליח מרצה באוניברסיטת הארוורד בשם <span class="en">Raphael Kay</span> לתרגם את לוגיקת הפיזארום לקוד — ניתן להריץ כמה שרוצים, באילו תנאים שנבחר.</span>
+        <span class="t-en">In <span class="num">2022</span>, a Harvard lecturer named Raphael Kay translated physarum's logic into code — runnable any number of times, under whichever conditions we choose.</span>
+      </p>
+      <p>
+        <span class="t-he">רפאל חלק איתי את הקוד שיצר. אני שילבתי אותו עם פיתוח שלי המתרגם את קבלת ההחלטות של עובש הפיזארום לשפה ויזואלית.</span>
+        <span class="t-en">Raphael shared the code with me. I integrated it with my own development that translates physarum's decision-making into a visual language.</span>
+      </p>
+    </div>
+
+    <div class="algo-composition reveal">
+      <figure>
+        <img src="images/seminar/src-4-tokyo.jpg" alt="Tokyo subway network">
+        <figcaption>Tokyo, 2015 · physarum-traced subway network</figcaption>
+      </figure>
+      <figure>
+        <img src="images/seminar/src-4-physarum.jpg" alt="Raphael Kay's physarum code rendering">
+        <figcaption>Harvard, 2022 · Raphael Kay · physarum in code</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     מצב נוכחי · מוח · גוף — Python brain → OSC → TouchDesigner body
+     Architecture recap before the visual language. Re-states Harvard.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide">
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">מצב נוכחי · מוח · גוף</span><span class="t-en">Current State · Brain · Body</span></h2>
+    </div>
+
+    <div class="reveal">
+      <div class="arch">
+        <div class="arch-card brain">
+          <div class="label">Brain · Python</div>
+          <h3>forest_sim/</h3>
+          <div class="role">decides what is true</div>
+          <ul>
+            <li>entities — trees, fungi, animals, microbes</li>
+            <li>signals — VOC, fungal, electrical, root, faunal</li>
+            <li>environment — weather + event-driven seasons</li>
+            <li>mycelium — memory-reinforced network</li>
+            <li>decay — nurse logs, sapling seeds</li>
+            <li>physarum — Kay/Mattacchione growth engine</li>
+          </ul>
+        </div>
+        <div class="arrow">
+          <div class="pipe">OSC · 7000</div>
+          <div class="line"></div>
+          <div class="freq">~60 fps · /entity /signal /path /physarum</div>
+        </div>
+        <div class="arch-card body">
+          <div class="label">Body · TouchDesigner</div>
+          <h3>.toe</h3>
+          <div class="role">decides what is seen</div>
+          <ul>
+            <li>point-cloud rendering of organisms</li>
+            <li>per-entity procedural deformation</li>
+            <li>signal trails between entities</li>
+            <li>decay fields, sapling activation</li>
+            <li>physarum tube delta-rendering</li>
+            <li>final installation projection</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal arch-note">
+      <p>
+        Physarum engine runs the Kay&nbsp;/&nbsp;Mattacchione algorithm —
+        source code shared by Raphael Kay, Harvard.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BRIEF §3 · שפה ויזואלית · בעבודה
+     Title-only slide: Gemini grid + 3D viewer + POPX outputs.
+     No explanatory copy — visuals speak for themselves.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide long" id="brief-3">
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">שפה ויזואלית</span><span class="t-en">Visual Language</span></h2>
+    </div>
+
+    <div class="section-label reveal">
+      <span class="en">Asset pipeline</span>
+      <span class="sep">·</span>
+      <span class="he">תהליך יצור מודלים</span>
+    </div>
+    <div class="grid reveal" id="prompts-grid"></div>
+
+    <div class="section-label reveal">
+      <span class="en">Asset Viewer</span>
+      <span class="sep">·</span>
+      <span class="he">צג מודלים</span>
+    </div>
+    <div class="viewer-wrap reveal">
+      <div class="viewer-tabs" id="viewer-tabs"></div>
+      <div class="viewer-canvas-wrap">
+        <canvas id="viewer-canvas"></canvas>
+        <div class="loader" id="viewer-loader">Loading…</div>
+      </div>
+      <div class="viewer-controls">
+        <div class="mode-toggle" role="group" aria-label="render mode">
+          <button data-mode="mesh">Mesh</button>
+          <button data-mode="points" class="active">Points</button>
+        </div>
+        <label>Background
+          <input type="range" id="bg-slider" min="0" max="100" value="0" />
+          <span class="val" id="bg-val">0</span>
+        </label>
+        <label>Exposure
+          <input type="range" id="contrast-slider" min="0" max="100" value="100" />
+          <span class="val" id="contrast-val">100</span>
+        </label>
+      </div>
+      <div class="viewer-info">
+        <span class="name" id="viewer-name">—</span>
+        <span id="viewer-stats">drag to orbit · scroll to zoom · right-click drag to pan</span>
+      </div>
+    </div>
+
+
+    <div class="section-label reveal">
+      <span class="en">Fruiting Body Simulation</span>
+      <span class="sep">·</span>
+      <span class="he">סימולציית גוף הפרי</span>
+    </div>
+    <div class="popx-grid reveal">
+      <div class="popx-slot">
+        <div class="popx-card">
+          <video src="media/popx/mycelium.mp4" poster="media/popx/mycelium-poster.jpg"
+                 autoplay muted loop playsinline preload="metadata"></video>
+          <div class="meta">
+            <div class="label">POPX · Mycelium</div>
+            <div class="name">Mycelium Simulation</div>
+          </div>
+        </div>
+      </div>
+      <div class="popx-slot">
+        <div class="popx-card">
+          <video src="media/popx/physarum.mp4" poster="media/popx/physarum-poster.jpg"
+                 autoplay muted loop playsinline preload="metadata"></video>
+          <div class="meta">
+            <div class="label">POPX · Physarum</div>
+            <div class="name">Physarum Simulation</div>
+          </div>
+        </div>
+      </div>
+      <div class="popx-slot">
+        <div class="popx-card">
+          <video src="media/popx/airborne.mp4" poster="media/popx/airborne-poster.jpg"
+                 autoplay muted loop playsinline preload="metadata"></video>
+          <div class="meta">
+            <div class="label">POPX · VOC</div>
+            <div class="name">Airborne Signal</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CLOSING — סקיצת מערכת · vision
+     System sketch placeholder + the vision statement underneath.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide closing">
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">סקיצת מערכת</span><span class="t-en">System Sketch</span></h2>
+    </div>
+
+    <div class="sketch-block reveal">
+      <video
+        src="media/closing/system-walkthrough.mp4"
+        poster="media/closing/system-walkthrough-poster.jpg"
+        autoplay muted loop playsinline preload="metadata"
+        aria-label="System walkthrough — scrolling overview of the recap"></video>
+    </div>
+
+    <div class="vision reveal">
+      <p>
+        <span class="t-he">
+          בעזרת חוויה אימרסיבית, רגשית, חזקה ומעמיקה
+          אני רוצה לחשוף את הקשר הבלתי פוסק של בני האדם למערכת המקיימת של הטבע —
+          ולהזכיר לנו שזו לא ישות זרה שאנחנו צריכים לשמור עליה,
+          אלא <span class="em">שאנו הישות הזו</span>,
+          יחד עם כל האורגניזמים שאיתם אנו חולקים את העולם הזה.
+        </span>
+        <span class="t-en">
+          Through an immersive, emotional, powerful and profound experience,
+          I want to reveal the unbroken connection between humans and the living system of nature —
+          and to remind us that it is not some foreign entity we must protect,
+          but that <span class="em">we are that entity</span>,
+          together with all the organisms with whom we share this world.
+        </span>
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Footer
+     ═══════════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <h4>MRS — Mycelium Rosetta Stone</h4>
+        <p>Yoel Zajdner · WIZO Haifa · Year 4<br/>2025 — 2026<br/>yoelon1@gmail.com</p>
+      </div>
+      <div class="col">
+        <h4>Stack</h4>
+        <p>Python · TouchDesigner · OSC<br/>POPX · Three.js · Meshy.ai<br/>Gemini · Substance · Blender</p>
+      </div>
+      <div class="col">
+        <h4>Festival</h4>
+        <p>פצה קוצה · קומה 3<br/>17 במאי 2026 · 12:30—17:00<br/>6 דקות · 4 כיתות מקבילות</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Scripts — Gemini grid + 3D viewer + sticky nav
+     ═══════════════════════════════════════════════════════════════ -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import { PROMPTS } from './prompts.js';
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
+
+/* Sticky nav reveal */
+const nav = document.getElementById('nav');
+const hero = document.querySelector('.slide.hero');
+new IntersectionObserver(([e]) => nav.classList.toggle('show', !e.isIntersecting), { threshold: 0.1 }).observe(hero);
+
+/* Reveal on scroll */
+const reveal = new IntersectionObserver(
+  es => es.forEach(e => e.isIntersecting && e.target.classList.add('in')),
+  { threshold: 0.08, rootMargin: '0px 0px -60px 0px' }
+);
+document.querySelectorAll('.reveal').forEach(el => reveal.observe(el));
+
+/* ─── Presentation mode: F-key fullscreen + ←/→ slide navigation ─── */
+const slides = Array.from(document.querySelectorAll('.slide'));
+function currentSlideIndex() {
+  const y = window.scrollY + window.innerHeight / 2;
+  let idx = 0;
+  slides.forEach((s, i) => { if (s.offsetTop <= y) idx = i; });
+  return idx;
+}
+function gotoSlide(i) {
+  const target = slides[Math.max(0, Math.min(slides.length - 1, i))];
+  target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen().catch(()=>{});
+}
+window.addEventListener('keydown', (e) => {
+  // Don't hijack keys when user is typing in an input (3D viewer has none, but defensive)
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  switch (e.key) {
+    case 'ArrowDown':
+    case 'ArrowLeft':   // RTL: left = forward
+    case 'PageDown':
+    case ' ':
+      e.preventDefault(); gotoSlide(currentSlideIndex() + 1); break;
+    case 'ArrowUp':
+    case 'ArrowRight':  // RTL: right = back
+    case 'PageUp':
+      e.preventDefault(); gotoSlide(currentSlideIndex() - 1); break;
+    case 'Home': e.preventDefault(); gotoSlide(0); break;
+    case 'End':  e.preventDefault(); gotoSlide(slides.length - 1); break;
+    case 'f':
+    case 'F':
+      e.preventDefault(); toggleFullscreen(); break;
+  }
+});
+
+/* Fullscreen toggle button (bottom-left corner, subtle) */
+const fsBtn = document.createElement('button');
+fsBtn.id = 'fs-btn';
+fsBtn.title = 'Toggle fullscreen (F) · ← → to navigate';
+fsBtn.innerHTML = '⛶';
+Object.assign(fsBtn.style, {
+  position: 'fixed', bottom: '20px', left: '20px', zIndex: '60',
+  width: '44px', height: '44px', border: '1px solid #1a3820',
+  background: 'rgba(0,0,0,0.6)', color: '#c8922a',
+  fontSize: '20px', cursor: 'pointer', borderRadius: '0',
+  backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+  fontFamily: 'sans-serif', opacity: '0.5', transition: 'opacity .2s',
+});
+fsBtn.addEventListener('mouseenter', () => fsBtn.style.opacity = '1');
+fsBtn.addEventListener('mouseleave', () => fsBtn.style.opacity = '0.5');
+fsBtn.addEventListener('click', toggleFullscreen);
+document.body.appendChild(fsBtn);
+document.addEventListener('fullscreenchange', () => {
+  fsBtn.innerHTML = document.fullscreenElement ? '⛶' : '⛶';
+});
+
+/* Language toggle (top-left corner) — HE ⇄ EN, persists via localStorage */
+const root = document.documentElement;
+function applyLang(lang) {
+  root.lang = lang;
+  root.dir = lang === 'he' ? 'rtl' : 'ltr';
+  document.body.dir = root.dir;
+  langBtn.innerHTML = lang === 'he' ? 'EN' : 'עב';
+  langBtn.title = lang === 'he' ? 'Switch to English' : 'החלף לעברית';
+  try { localStorage.setItem('mrs-lang', lang); } catch (_) {}
+}
+const langBtn = document.createElement('button');
+langBtn.id = 'lang-btn';
+Object.assign(langBtn.style, {
+  position: 'fixed', top: '20px', left: '20px', zIndex: '60',
+  minWidth: '44px', height: '44px', padding: '0 12px',
+  border: '1px solid #1a3820',
+  background: 'rgba(0,0,0,0.6)', color: '#c8922a',
+  fontSize: '13px', cursor: 'pointer', borderRadius: '0',
+  letterSpacing: '0.18em', textTransform: 'uppercase',
+  backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)',
+  fontFamily: "'Inter', sans-serif", opacity: '0.5', transition: 'opacity .2s',
+});
+langBtn.addEventListener('mouseenter', () => langBtn.style.opacity = '1');
+langBtn.addEventListener('mouseleave', () => langBtn.style.opacity = '0.5');
+langBtn.addEventListener('click', () => applyLang(root.lang === 'he' ? 'en' : 'he'));
+document.body.appendChild(langBtn);
+applyLang((() => { try { return localStorage.getItem('mrs-lang') || 'he'; } catch (_) { return 'he'; } })());
+
+/* Gemini grid */
+const grid = document.getElementById('prompts-grid');
+PROMPTS.forEach((prompt, i) => {
+  const n = String(i + 1).padStart(2, '0');
+  const card = document.createElement('article');
+  card.className = 'card';
+  card.innerHTML = `
+    <div class="img">
+      <div class="ph">${n}</div>
+      <img src="images/gemini/${n}.png" alt="" loading="lazy" onload="this.style.opacity=1" onerror="this.remove()" style="opacity:0;transition:opacity .4s">
+    </div>
+    <div class="meta-row"><span>No. ${n}</span><span>Gemini</span></div>
+    <p>${prompt}</p>
+  `;
+  grid.appendChild(card);
+});
+
+/* 3D viewer */
+const MODELS = [
+  { name: 'Chanterelle',          file: 'models/Meshy_AI_chantrelle_0412143724_generate.glb' },
+  { name: 'Palm',                 file: 'models/Meshy_AI_palm_0330202859_texture.glb' },
+  { name: 'Alocasia',             file: 'models/alocasia.glb' },
+  { name: 'Alocasia Leaf',        file: 'models/Meshy_AI_alocasia_leaf_0401102043_generate.glb' },
+  { name: 'Monstera',             file: 'models/monstera.glb' },
+  { name: 'Trailing Vine',        file: 'models/vine.glb' },
+  { name: 'Elephant Ear',         file: 'models/Meshy_AI_Emerging_Elephant_Ear_0328010144_texture.glb' },
+  { name: 'Mossy Log + Ferns',    file: 'models/Meshy_AI_Mossy_Log_with_Ferns__0329232531_texture.glb' },
+  { name: 'Mycelial Network',     file: 'models/Meshy_AI_Mycelial_Network_0413144921_generate.glb' },
+  { name: 'Big Root',             file: 'models/Meshy_AI_big_root__0413144927_generate.glb' },
+  { name: 'Baobab Root',          file: 'models/Meshy_AI_baoobab_root_0413144941_generate.glb' },
+  { name: 'Oyster Mushrooms',     file: 'models/Meshy_AI_Oyster_Mushrooms_on_a_0413170615_generate.glb' },
+  { name: 'Turquoise Oyster',     file: 'models/Meshy_AI_Turquoise_Oyster_Mush_0413171001_generate.glb' },
+  { name: 'Ammonite Fossil',      file: 'models/Meshy_AI_Ammonite_Fossil_0412143730_generate.glb' },
+  { name: 'Pillbug',              file: 'models/Meshy_AI_PILLBUG_0413170942_generate.glb' },
+  { name: 'Blind Fish',           file: 'models/Meshy_AI_blind_fish_0413165520_generate.glb' },
+  { name: 'Underground Eel',      file: 'models/Meshy_AI_underground_eel_0413165509_generate.glb' },
+];
+
+const tabsEl = document.getElementById('viewer-tabs');
+const canvas = document.getElementById('viewer-canvas');
+const loaderEl = document.getElementById('viewer-loader');
+const nameEl = document.getElementById('viewer-name');
+const statsEl = document.getElementById('viewer-stats');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0f0a);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.01, 1000);
+camera.position.set(2, 1.5, 2);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+
+scene.add(new THREE.HemisphereLight(0xffffff, 0xb8b0a4, 0.9));
+const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(3, 5, 4); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.6); fill.position.set(-3, 2, -2); scene.add(fill);
+
+function resize() {
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize); resize();
+
+let currentDisplay = null, currentModel = null, mode = 'points';
+const cache = new Map();
+const loader = new GLTFLoader();
+const POINT_SAMPLE_COUNT = 90000;
+const DEFAULT_INDEX = Math.max(0, MODELS.findIndex(m => m.name === 'Mycelial Network'));
+
+function buildPoints(root, size) {
+  root.updateMatrixWorld(true);
+  const meshes = []; let total = 0;
+  root.traverse(o => {
+    if (o.isMesh && o.geometry?.attributes?.position) {
+      const idx = o.geometry.index;
+      const tris = idx ? idx.count / 3 : o.geometry.attributes.position.count / 3;
+      meshes.push({ mesh: o, tris }); total += tris;
+    }
+  });
+  if (!meshes.length) return null;
+  const positions = new Float32Array(POINT_SAMPLE_COUNT * 3);
+  const tmp = new THREE.Vector3();
+  let written = 0;
+  for (const { mesh, tris } of meshes) {
+    const share = Math.max(1, Math.round(POINT_SAMPLE_COUNT * tris / total));
+    let sampler; try { sampler = new MeshSurfaceSampler(mesh).build(); } catch { continue; }
+    for (let i = 0; i < share && written < POINT_SAMPLE_COUNT; i++) {
+      sampler.sample(tmp); tmp.applyMatrix4(mesh.matrixWorld);
+      positions[written * 3] = tmp.x; positions[written * 3 + 1] = tmp.y; positions[written * 3 + 2] = tmp.z;
+      written++;
+    }
+  }
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute('position', new THREE.BufferAttribute(positions.slice(0, written * 3), 3));
+  return new THREE.Points(geom, new THREE.PointsMaterial({ size: size / 600, color: 0xc8922a, sizeAttenuation: true }));
+}
+
+function display(entry) {
+  if (currentDisplay) scene.remove(currentDisplay);
+  currentDisplay = mode === 'points' ? entry.points : entry.mesh;
+  scene.add(currentDisplay);
+  const fitDist = entry.size / (2 * Math.tan((Math.PI * camera.fov) / 360));
+  camera.position.set(fitDist * 0.7, fitDist * 0.4, fitDist * 0.9);
+  controls.target.set(0, 0, 0); controls.update();
+  if (mode === 'points') {
+    const n = entry.points.geometry.getAttribute('position').count;
+    statsEl.textContent = `${n.toLocaleString()} sampled points · drag to orbit · scroll to zoom`;
+  } else {
+    let tri = 0;
+    entry.mesh.traverse(o => {
+      if (o.isMesh) {
+        const idx = o.geometry.index;
+        tri += idx ? idx.count / 3 : o.geometry.getAttribute('position').count / 3;
+      }
+    });
+    statsEl.textContent = `${Math.round(tri).toLocaleString()} triangles · drag to orbit · scroll to zoom`;
+  }
+}
+
+const bgSlider = document.getElementById('bg-slider');
+const bgVal = document.getElementById('bg-val');
+const exposureSlider = document.getElementById('contrast-slider');
+const exposureVal = document.getElementById('contrast-val');
+
+function applyBackground(t) {
+  const v = t / 100;
+  const r = Math.round(0x0a + (0xf0 - 0x0a) * v);
+  const g = Math.round(0x0f + (0xee - 0x0f) * v);
+  const b = Math.round(0x0a + (0xe6 - 0x0a) * v);
+  scene.background = new THREE.Color((r << 16) | (g << 8) | b);
+  canvas.style.background = `rgb(${r},${g},${b})`;
+  bgVal.textContent = t;
+}
+function applyExposure(t) {
+  const v = t / 100;
+  renderer.toneMappingExposure = 0.2 + v * v * 2.2;
+  exposureVal.textContent = t;
+}
+bgSlider.addEventListener('input', e => applyBackground(+e.target.value));
+exposureSlider.addEventListener('input', e => applyExposure(+e.target.value));
+applyBackground(+bgSlider.value); applyExposure(+exposureSlider.value);
+
+function loadModel(model) {
+  currentModel = model; nameEl.textContent = model.name;
+  if (cache.has(model.file)) { display(cache.get(model.file)); return; }
+  loaderEl.style.display = 'flex'; loaderEl.textContent = 'Loading…';
+  loader.load(model.file, gltf => {
+    const root = gltf.scene;
+    const box = new THREE.Box3().setFromObject(root);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3()).length();
+    root.position.sub(center); root.updateMatrixWorld(true);
+    const points = buildPoints(root, size);
+    const entry = { mesh: root, points, size };
+    cache.set(model.file, entry);
+    if (currentModel === model) display(entry);
+    loaderEl.style.display = 'none';
+  }, xhr => {
+    if (xhr.lengthComputable) loaderEl.textContent = `Loading ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
+  }, err => { loaderEl.textContent = 'Failed to load'; console.error(err); });
+}
+
+document.querySelectorAll('.mode-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active')) return;
+    document.querySelectorAll('.mode-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    if (currentModel && cache.has(currentModel.file)) display(cache.get(currentModel.file));
+  });
+});
+
+MODELS.forEach((m, i) => {
+  const btn = document.createElement('button');
+  btn.className = 'viewer-tab' + (i === DEFAULT_INDEX ? ' active' : '');
+  btn.textContent = m.name;
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.viewer-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadModel(m);
+  });
+  tabsEl.appendChild(btn);
+});
+
+loadModel(MODELS[DEFAULT_INDEX]);
+
+// Site-wide preload: once model 0 is cached, background-load the rest sequentially
+// so the viewer has zero lag when the user reaches the slide.
+function preloadModel(model) {
+  return new Promise(resolve => {
+    if (cache.has(model.file)) return resolve();
+    loader.load(model.file, gltf => {
+      const root = gltf.scene;
+      const box = new THREE.Box3().setFromObject(root);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3()).length();
+      root.position.sub(center); root.updateMatrixWorld(true);
+      const points = buildPoints(root, size);
+      cache.set(model.file, { mesh: root, points, size });
+      resolve();
+    }, undefined, err => { console.warn('preload failed:', model.name, err); resolve(); });
+  });
+}
+async function preloadAll() {
+  for (let i = 0; i < MODELS.length; i++) {
+    if (i === DEFAULT_INDEX) continue;
+    await preloadModel(MODELS[i]);
+  }
+}
+const startPreload = () => {
+  if ('requestIdleCallback' in window) requestIdleCallback(() => preloadAll(), { timeout: 3000 });
+  else setTimeout(preloadAll, 1500);
+};
+const initialPoll = setInterval(() => {
+  if (cache.has(MODELS[DEFAULT_INDEX].file)) { clearInterval(initialPoll); startPreload(); }
+}, 200);
+
+function tick() {
+  controls.update();
+  if (currentDisplay) currentDisplay.rotation.y += 0.0008;
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+
+</body>
+</html>
