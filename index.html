@@ -234,6 +234,43 @@
     font-family: 'Inter', sans-serif;
   }
 
+  /* Slide background video — used on the premise slide */
+  .slide.has-bg-video .container { position: relative; z-index: 2; }
+  .slide-bg-video {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    pointer-events: none;
+    user-select: none;
+    filter: contrast(1.05) brightness(0.95);
+  }
+  .slide-bg-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    /* Light edge vignette only — preserve as much physarum as possible. */
+    background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.45) 100%);
+  }
+  .slide.has-bg-video .premise-wrap {
+    position: relative;
+    padding: clamp(32px, 5vh, 64px) clamp(28px, 5vw, 80px);
+    background: rgba(10, 13, 10, 0.7);
+    backdrop-filter: blur(6px) saturate(0.85);
+    -webkit-backdrop-filter: blur(6px) saturate(0.85);
+    border: 1px solid rgba(58, 122, 82, 0.25);
+    border-radius: 2px;
+    max-width: min(1100px, 86vw);
+    margin: 0 auto;
+  }
+  .slide.has-bg-video .premise-text {
+    color: var(--display);
+    margin-bottom: 0;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.65);
+  }
+
   /* Forest composition — cliffs anchor bottom corners of slide, text floats above */
   .slide.has-cliffs .container { position: relative; z-index: 2; }
   .forest-composition {
@@ -494,6 +531,17 @@
     border-top: 1px solid var(--line);
     flex-wrap: wrap; align-items: center;
   }
+  .mode-toggle { display: inline-flex; border: 1px solid var(--line); background: var(--bg); }
+  .mode-toggle button {
+    background: none; border: none;
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); cursor: pointer; transition: all .15s;
+  }
+  .mode-toggle button.active { background: var(--amber); color: var(--bg); }
+  .mode-toggle button:not(.active):not(:disabled):hover { color: var(--ink); }
+  .mode-toggle button:disabled { opacity: 0.3; cursor: not-allowed; }
   .viewer-controls label {
     display: flex; align-items: center; gap: 12px;
     font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
@@ -853,15 +901,22 @@
 
 <!-- ═══════════════════════════════════════════════════════════════
      SLIDE 2 — Premise statement (PDF page 2)
+     Physarum simulation video as the full-slide background, premise
+     text floats centered with a dim/vignette overlay for readability.
      ═══════════════════════════════════════════════════════════════ -->
-<section class="slide">
+<section class="slide has-bg-video">
+  <video class="slide-bg-video" src="media/popx/physarum.mp4"
+         poster="media/popx/physarum-poster.jpg"
+         autoplay muted loop playsinline preload="metadata"
+         aria-hidden="true"></video>
+  <div class="slide-bg-overlay" aria-hidden="true"></div>
+
   <div class="container">
     <div class="premise-wrap reveal">
       <p class="premise-text">
         <span class="t-he">עקרונות הארכיטקטורה המרחבית של פטריות ועובש הפיזארום ביערות העד, כמודל לחידוש הקישוריות וההשתלבות בין האדם לטבע ובין האדם לעצמו.</span>
         <span class="t-en">The spatial architecture principles of fungi and physarum slime mould in primeval forests — as a model for renewing connectivity and integration between humans and nature, and between humans and themselves.</span>
       </p>
-      <div class="premise-figure"></div>
     </div>
   </div>
 </section>
@@ -1038,6 +1093,10 @@
         <div class="loader" id="viewer-loader">Loading…</div>
       </div>
       <div class="viewer-controls">
+        <div class="mode-toggle" role="group" aria-label="render mode">
+          <button data-mode="mesh" id="mode-mesh" disabled title="GLB mesh — available for select models">Mesh</button>
+          <button data-mode="points" id="mode-points" class="active">Points</button>
+        </div>
         <label>Background
           <input type="range" id="bg-slider" min="0" max="100" value="0" />
           <span class="val" id="bg-val">0</span>
@@ -1174,6 +1233,7 @@
 import { PROMPTS } from './prompts.js';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 /* Sticky nav reveal */
 const nav = document.getElementById('nav');
@@ -1294,24 +1354,27 @@ PROMPTS.forEach((prompt, i) => {
    Format: raw Float32 binary (x,y,z,r,g,b per point). All assets share
    one open-CORS origin so we never have to bundle them into this repo. */
 const PC_BASE = 'https://gyozan.com/3d/pc';
+// `glb` is optional — only present for the 3 models bundled in this repo
+// that exist as both a textured mesh AND a pre-sampled point cloud, so the
+// viewer can demonstrate the GLB-to-point-cloud sampling step of the pipeline.
 const MODELS = [
-  { name: 'Mycelial Network',     file: `${PC_BASE}/mycelialNetwork.pc.bin` },
-  { name: 'Chanterelle',          file: `${PC_BASE}/chanterelle.pc.bin` },
-  { name: 'Oyster Mushrooms',     file: `${PC_BASE}/oysterMushrooms.pc.bin` },
-  { name: 'Turquoise Oyster',     file: `${PC_BASE}/turquoiseOyster.pc.bin` },
-  { name: 'Ficus',                file: `${PC_BASE}/ficus.pc.bin` },
-  { name: 'Palm',                 file: `${PC_BASE}/palm.pc.bin` },
-  { name: 'Alocasia',             file: `${PC_BASE}/alocasia.pc.bin` },
-  { name: 'Monstera',             file: `${PC_BASE}/monstera.pc.bin` },
-  { name: 'Trailing Vine',        file: `${PC_BASE}/vine.pc.bin` },
-  { name: 'Elephant Ear',         file: `${PC_BASE}/elephantEar.pc.bin` },
-  { name: 'Mossy Log + Ferns',    file: `${PC_BASE}/mossyLog.pc.bin` },
-  { name: 'Big Root',             file: `${PC_BASE}/bigRoot.pc.bin` },
-  { name: 'Baobab Root',          file: `${PC_BASE}/baobabRoot.pc.bin` },
-  { name: 'Ammonite Fossil',      file: `${PC_BASE}/ammoniteFossil.pc.bin` },
-  { name: 'Pillbug',              file: `${PC_BASE}/pillbug.pc.bin` },
-  { name: 'Blind Fish',           file: `${PC_BASE}/blindFish.pc.bin` },
-  { name: 'Underground Eel',      file: `${PC_BASE}/undergroundEel.pc.bin` },
+  { name: 'Mycelial Network', file: `${PC_BASE}/mycelialNetwork.pc.bin`, glb: 'models/Meshy_AI_Mycelial_Network_0413144921_generate.glb' },
+  { name: 'Chanterelle',      file: `${PC_BASE}/chanterelle.pc.bin`,     glb: 'models/Meshy_AI_chantrelle_0412143724_generate.glb' },
+  { name: 'Pillbug',          file: `${PC_BASE}/pillbug.pc.bin`,         glb: 'models/Meshy_AI_PILLBUG_0413170942_generate.glb' },
+  { name: 'Oyster Mushrooms', file: `${PC_BASE}/oysterMushrooms.pc.bin` },
+  { name: 'Turquoise Oyster', file: `${PC_BASE}/turquoiseOyster.pc.bin` },
+  { name: 'Ficus',            file: `${PC_BASE}/ficus.pc.bin` },
+  { name: 'Palm',             file: `${PC_BASE}/palm.pc.bin` },
+  { name: 'Alocasia',         file: `${PC_BASE}/alocasia.pc.bin` },
+  { name: 'Monstera',         file: `${PC_BASE}/monstera.pc.bin` },
+  { name: 'Trailing Vine',    file: `${PC_BASE}/vine.pc.bin` },
+  { name: 'Elephant Ear',     file: `${PC_BASE}/elephantEar.pc.bin` },
+  { name: 'Mossy Log + Ferns',file: `${PC_BASE}/mossyLog.pc.bin` },
+  { name: 'Big Root',         file: `${PC_BASE}/bigRoot.pc.bin` },
+  { name: 'Baobab Root',      file: `${PC_BASE}/baobabRoot.pc.bin` },
+  { name: 'Ammonite Fossil',  file: `${PC_BASE}/ammoniteFossil.pc.bin` },
+  { name: 'Blind Fish',       file: `${PC_BASE}/blindFish.pc.bin` },
+  { name: 'Underground Eel',  file: `${PC_BASE}/undergroundEel.pc.bin` },
 ];
 
 const tabsEl = document.getElementById('viewer-tabs');
@@ -1347,8 +1410,9 @@ function resize() {
 }
 window.addEventListener('resize', resize); resize();
 
-let currentDisplay = null, currentModel = null;
-const cache = new Map();
+let currentDisplay = null, currentModel = null, mode = 'points';
+const cache = new Map();  // key → { points?, mesh?, size, count? }
+const gltfLoader = new GLTFLoader();
 const DEFAULT_INDEX = Math.max(0, MODELS.findIndex(m => m.name === 'Mycelial Network'));
 
 /* Load a .pc.bin (raw Float32, 6 floats per point: x,y,z,r,g,b).
@@ -1397,14 +1461,52 @@ async function loadPCBin(url) {
   return { points: new THREE.Points(geom, mat), size, count };
 }
 
+/* Load a textured GLB and return { mesh, size } centered on origin. */
+function loadGLB(url) {
+  return new Promise((resolve, reject) => {
+    gltfLoader.load(url, gltf => {
+      const root = gltf.scene;
+      const box = new THREE.Box3().setFromObject(root);
+      const center = box.getCenter(new THREE.Vector3());
+      const size = box.getSize(new THREE.Vector3()).length();
+      root.position.sub(center); root.updateMatrixWorld(true);
+      // Count tris for the stats line
+      let tri = 0;
+      root.traverse(o => {
+        if (o.isMesh) {
+          const idx = o.geometry.index;
+          tri += idx ? idx.count / 3 : o.geometry.getAttribute('position').count / 3;
+        }
+      });
+      resolve({ mesh: root, size, tri: Math.round(tri) });
+    }, undefined, reject);
+  });
+}
+
 function display(entry) {
   if (currentDisplay) scene.remove(currentDisplay);
-  currentDisplay = entry.points;
+  currentDisplay = mode === 'mesh' && entry.mesh ? entry.mesh : entry.points;
   scene.add(currentDisplay);
   const fitDist = entry.size / (2 * Math.tan((Math.PI * camera.fov) / 360));
   camera.position.set(fitDist * 0.7, fitDist * 0.4, fitDist * 0.9);
   controls.target.set(0, 0, 0); controls.update();
-  statsEl.textContent = `${entry.count.toLocaleString()} points · drag to orbit · scroll to zoom`;
+  if (currentDisplay === entry.mesh) {
+    statsEl.textContent = `${entry.tri.toLocaleString()} triangles · drag to orbit · scroll to zoom`;
+  } else {
+    statsEl.textContent = `${entry.count.toLocaleString()} points · drag to orbit · scroll to zoom`;
+  }
+  // Enable Mesh button only if this model has a bundled GLB
+  const meshBtn = document.getElementById('mode-mesh');
+  if (meshBtn) {
+    const supports = !!currentModel?.glb;
+    meshBtn.disabled = !supports;
+    if (!supports && mode === 'mesh') {
+      // Fall back to points if we lost mesh support on tab switch
+      mode = 'points';
+      document.getElementById('mode-points').classList.add('active');
+      meshBtn.classList.remove('active');
+    }
+  }
 }
 
 const bgSlider = document.getElementById('bg-slider');
@@ -1432,18 +1534,62 @@ applyBackground(+bgSlider.value); applyExposure(+exposureSlider.value);
 
 async function loadModel(model) {
   currentModel = model; nameEl.textContent = model.name;
-  if (cache.has(model.file)) { display(cache.get(model.file)); return; }
+  if (cache.has(model.file)) {
+    // Cached pc.bin — but mesh may still be loading lazily
+    display(cache.get(model.file));
+    // If we're in mesh mode and the GLB isn't cached yet, kick it off
+    if (mode === 'mesh' && model.glb && !cache.get(model.file).mesh) {
+      try {
+        const glb = await loadGLB(model.glb);
+        const entry = cache.get(model.file);
+        entry.mesh = glb.mesh; entry.tri = glb.tri;
+        if (currentModel === model) display(entry);
+      } catch (e) { console.warn('GLB load failed:', model.name, e.message); }
+    }
+    return;
+  }
   loaderEl.style.display = 'flex'; loaderEl.textContent = 'Loading…';
   try {
     const entry = await loadPCBin(model.file);
     cache.set(model.file, entry);
     if (currentModel === model) display(entry);
     loaderEl.style.display = 'none';
+    // Lazily load the GLB for this model if it has one — doesn't block the pc.bin display
+    if (model.glb) {
+      loadGLB(model.glb).then(glb => {
+        entry.mesh = glb.mesh; entry.tri = glb.tri;
+        if (currentModel === model) display(entry);  // refresh button state
+      }).catch(e => console.warn('GLB lazy load failed:', model.name, e.message));
+    }
   } catch (err) {
     loaderEl.textContent = 'Failed to load';
     console.error('loadModel failed:', model.name, err);
   }
 }
+
+// Mesh / Points toggle
+document.querySelectorAll('.mode-toggle button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (btn.classList.contains('active') || btn.disabled) return;
+    document.querySelectorAll('.mode-toggle button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    mode = btn.dataset.mode;
+    if (currentModel && cache.has(currentModel.file)) {
+      const entry = cache.get(currentModel.file);
+      // If user clicked Mesh but GLB not loaded yet, load it
+      if (mode === 'mesh' && currentModel.glb && !entry.mesh) {
+        loaderEl.style.display = 'flex'; loaderEl.textContent = 'Loading mesh…';
+        loadGLB(currentModel.glb).then(glb => {
+          entry.mesh = glb.mesh; entry.tri = glb.tri;
+          if (currentModel) display(entry);
+          loaderEl.style.display = 'none';
+        }).catch(e => { loaderEl.textContent = 'Mesh failed'; console.error(e); });
+      } else {
+        display(entry);
+      }
+    }
+  });
+});
 
 MODELS.forEach((m, i) => {
   const btn = document.createElement('button');
