@@ -257,18 +257,14 @@
   .slide.has-bg-video .premise-wrap {
     position: relative;
     padding: clamp(32px, 5vh, 64px) clamp(28px, 5vw, 80px);
-    background: rgba(10, 13, 10, 0.7);
-    backdrop-filter: blur(6px) saturate(0.85);
-    -webkit-backdrop-filter: blur(6px) saturate(0.85);
+    background: #000;
     border: 1px solid rgba(58, 122, 82, 0.25);
-    border-radius: 2px;
     max-width: min(1100px, 86vw);
     margin: 0 auto;
   }
   .slide.has-bg-video .premise-text {
     color: var(--display);
     margin-bottom: 0;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.65);
   }
 
   /* Forest composition — cliffs anchor bottom corners of slide, text floats above */
@@ -915,7 +911,7 @@
     <div class="premise-wrap reveal">
       <p class="premise-text">
         <span class="t-he">עקרונות הארכיטקטורה המרחבית של פטריות ועובש הפיזארום ביערות העד, כמודל לחידוש הקישוריות וההשתלבות בין האדם לטבע ובין האדם לעצמו.</span>
-        <span class="t-en">The spatial architecture principles of fungi and physarum slime mould in primeval forests — as a model for renewing connectivity and integration between humans and nature, and between humans and themselves.</span>
+        <span class="t-en">The spatial architecture principles of fungi and physarum slime mould in primeval forests, as a model for renewing connectivity and integration between humans and nature, and between humans and themselves.</span>
       </p>
     </div>
   </div>
@@ -941,11 +937,11 @@
     <div class="narrative reveal">
       <p>
         <span class="t-he">היום, אנו מבינים שהיער הוא לא רק אסופת עצים וחיות, אלא אורגניזם חי שמבצע החלטות ומכלכל את עצמו ואת כל חלקיו ממש כמו שאנחנו דואגים לאכול ולשתות.</span>
-        <span class="t-en">We now understand that the forest is not merely a collection of trees and animals, but a living organism that makes decisions and sustains itself and all its parts — just as we care to eat and drink.</span>
+        <span class="t-en">We now understand that the forest is not merely a collection of trees and animals, but a living organism that makes decisions and sustains itself and all its parts, just as we care to eat and drink.</span>
       </p>
       <p>
         <span class="t-he">עצים בצד אחד של היער דואגים לעצים בצד שני של היער דרך רשת סבוכה של מתווכים ובראשן הפטריות. להן רשת תקשורת מורכבת הנקראת בקהילה המדעית: <span class="en serif">Wood Wide Web</span>.</span>
-        <span class="t-en">Trees on one side of the forest care for trees on the other side, through an intricate network of mediators — chief among them, fungi. They form a complex communication network the scientific community calls the <span class="serif">Wood Wide Web</span>.</span>
+        <span class="t-en">Trees on one side of the forest care for trees on the other side, through an intricate network of mediators, chief among them fungi. They form a complex communication network the scientific community calls the <span class="serif">Wood Wide Web</span>.</span>
       </p>
     </div>
 
@@ -980,12 +976,12 @@
 
     <div class="narrative reveal">
       <p>
-        <span class="t-he">ב־<span class="num">2015</span> נעשה ניסוי בטוקיו, יפן — עובש הפיזארום שרטט ותכנן את רשת הרכבות העירונית, ופתר בעיות תכנוניות בצורה שבמקומות מסוימים השתוותה למהנדסים ועקפה אותם: רשת יציבה, דינמית, ויעילה.</span>
-        <span class="t-en">In <span class="num">2015</span>, an experiment in Tokyo, Japan — physarum slime mould drew and planned the city's subway network, solving planning problems in ways that, in places, matched and surpassed the engineers: a stable, dynamic, efficient network.</span>
+        <span class="t-he">ב־<span class="num">2015</span> נעשה ניסוי בטוקיו, יפן. עובש הפיזארום שרטט ותכנן את רשת הרכבות העירונית, ופתר בעיות תכנוניות בצורה שבמקומות מסוימים השתוותה למהנדסים ועקפה אותם: רשת יציבה, דינמית, ויעילה.</span>
+        <span class="t-en">In <span class="num">2015</span>, an experiment in Tokyo, Japan: physarum slime mould drew and planned the city's subway network, solving planning problems in ways that, in places, matched and surpassed the engineers: a stable, dynamic, efficient network.</span>
       </p>
       <p>
-        <span class="t-he">ב־<span class="num">2022</span> הצליח מרצה באוניברסיטת הארוורד בשם <span class="en">Raphael Kay</span> לתרגם את לוגיקת הפיזארום לקוד — ניתן להריץ כמה שרוצים, באילו תנאים שנבחר.</span>
-        <span class="t-en">In <span class="num">2022</span>, a Harvard lecturer named Raphael Kay translated physarum's logic into code — runnable any number of times, under whichever conditions we choose.</span>
+        <span class="t-he">ב־<span class="num">2022</span> הצליח מרצה באוניברסיטת הארוורד בשם <span class="en">Raphael Kay</span> לתרגם את לוגיקת הפיזארום לקוד. ניתן להריץ כמה שרוצים, באילו תנאים שנבחר.</span>
+        <span class="t-en">In <span class="num">2022</span>, a Harvard lecturer named Raphael Kay translated physarum's logic into code. It can be run any number of times, under whichever conditions we choose.</span>
       </p>
       <p>
         <span class="t-he">רפאל חלק איתי את הקוד שיצר. אני שילבתי אותו עם פיתוח שלי המתרגם את קבלת ההחלטות של עובש הפיזארום לשפה ויזואלית.</span>
@@ -1024,12 +1020,12 @@
           <h3>forest_sim/</h3>
           <div class="role">decides what is true</div>
           <ul>
-            <li>entities — trees, fungi, animals, microbes</li>
-            <li>signals — VOC, fungal, electrical, root, faunal</li>
-            <li>environment — weather + event-driven seasons</li>
-            <li>mycelium — memory-reinforced network</li>
-            <li>decay — nurse logs, sapling seeds</li>
-            <li>physarum — Kay/Mattacchione growth engine</li>
+            <li>entities: trees, fungi, animals, microbes</li>
+            <li>signals: VOC, fungal, electrical, root, faunal</li>
+            <li>environment: weather + event-driven seasons</li>
+            <li>mycelium: memory-reinforced network</li>
+            <li>decay: nurse logs, sapling seeds</li>
+            <li>physarum: Kay/Mattacchione growth engine</li>
           </ul>
         </div>
         <div class="arrow">
@@ -1055,8 +1051,8 @@
 
     <div class="reveal arch-note">
       <p>
-        Physarum engine runs the Kay&nbsp;/&nbsp;Mattacchione algorithm —
-        source code shared by Raphael Kay, Harvard.
+        Physarum engine runs the Kay&nbsp;/&nbsp;Mattacchione algorithm.
+        Source code shared by Raphael Kay, Harvard.
       </p>
     </div>
   </div>
@@ -1176,15 +1172,14 @@
       <p>
         <span class="t-he">
           בעזרת חוויה אימרסיבית, רגשית, חזקה ומעמיקה
-          אני רוצה לחשוף את הקשר הבלתי פוסק של בני האדם למערכת המקיימת של הטבע —
+          אני רוצה לחשוף את הקשר הבלתי פוסק של בני האדם למערכת המקיימת של הטבע,
           ולהזכיר לנו שזו לא ישות זרה שאנחנו צריכים לשמור עליה,
           אלא <span class="em">שאנו הישות הזו</span>,
           יחד עם כל האורגניזמים שאיתם אנו חולקים את העולם הזה.
         </span>
         <span class="t-en">
           Through an immersive, emotional, powerful and profound experience,
-          I want to reveal the unbroken connection between humans and the living system of nature —
-          and to remind us that it is not some foreign entity we must protect,
+          I want to reveal the unbroken connection between humans and the living system of nature, and to remind us that it is not some foreign entity we must protect,
           but that <span class="em">we are that entity</span>,
           together with all the organisms with whom we share this world.
         </span>
