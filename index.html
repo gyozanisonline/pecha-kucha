@@ -494,16 +494,6 @@
     border-top: 1px solid var(--line);
     flex-wrap: wrap; align-items: center;
   }
-  .mode-toggle { display: inline-flex; border: 1px solid var(--line); background: var(--bg); }
-  .mode-toggle button {
-    background: none; border: none;
-    padding: 8px 16px;
-    font-family: 'Inter', sans-serif;
-    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--muted); cursor: pointer; transition: all .15s;
-  }
-  .mode-toggle button.active { background: var(--amber); color: var(--bg); }
-  .mode-toggle button:not(.active):hover { color: var(--ink); }
   .viewer-controls label {
     display: flex; align-items: center; gap: 12px;
     font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
@@ -1048,10 +1038,6 @@
         <div class="loader" id="viewer-loader">Loading…</div>
       </div>
       <div class="viewer-controls">
-        <div class="mode-toggle" role="group" aria-label="render mode">
-          <button data-mode="mesh">Mesh</button>
-          <button data-mode="points" class="active">Points</button>
-        </div>
         <label>Background
           <input type="range" id="bg-slider" min="0" max="100" value="0" />
           <span class="val" id="bg-val">0</span>
@@ -1187,9 +1173,7 @@
 <script type="module">
 import { PROMPTS } from './prompts.js';
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { MeshSurfaceSampler } from 'three/addons/math/MeshSurfaceSampler.js';
 
 /* Sticky nav reveal */
 const nav = document.getElementById('nav');
@@ -1306,25 +1290,28 @@ PROMPTS.forEach((prompt, i) => {
   grid.appendChild(card);
 });
 
-/* 3D viewer */
+/* 3D viewer — point clouds streamed from gyozan.com portfolio CDN
+   Format: raw Float32 binary (x,y,z,r,g,b per point). All assets share
+   one open-CORS origin so we never have to bundle them into this repo. */
+const PC_BASE = 'https://gyozan.com/3d/pc';
 const MODELS = [
-  { name: 'Chanterelle',          file: 'models/Meshy_AI_chantrelle_0412143724_generate.glb' },
-  { name: 'Palm',                 file: 'models/Meshy_AI_palm_0330202859_texture.glb' },
-  { name: 'Alocasia',             file: 'models/alocasia.glb' },
-  { name: 'Alocasia Leaf',        file: 'models/Meshy_AI_alocasia_leaf_0401102043_generate.glb' },
-  { name: 'Monstera',             file: 'models/monstera.glb' },
-  { name: 'Trailing Vine',        file: 'models/vine.glb' },
-  { name: 'Elephant Ear',         file: 'models/Meshy_AI_Emerging_Elephant_Ear_0328010144_texture.glb' },
-  { name: 'Mossy Log + Ferns',    file: 'models/Meshy_AI_Mossy_Log_with_Ferns__0329232531_texture.glb' },
-  { name: 'Mycelial Network',     file: 'models/Meshy_AI_Mycelial_Network_0413144921_generate.glb' },
-  { name: 'Big Root',             file: 'models/Meshy_AI_big_root__0413144927_generate.glb' },
-  { name: 'Baobab Root',          file: 'models/Meshy_AI_baoobab_root_0413144941_generate.glb' },
-  { name: 'Oyster Mushrooms',     file: 'models/Meshy_AI_Oyster_Mushrooms_on_a_0413170615_generate.glb' },
-  { name: 'Turquoise Oyster',     file: 'models/Meshy_AI_Turquoise_Oyster_Mush_0413171001_generate.glb' },
-  { name: 'Ammonite Fossil',      file: 'models/Meshy_AI_Ammonite_Fossil_0412143730_generate.glb' },
-  { name: 'Pillbug',              file: 'models/Meshy_AI_PILLBUG_0413170942_generate.glb' },
-  { name: 'Blind Fish',           file: 'models/Meshy_AI_blind_fish_0413165520_generate.glb' },
-  { name: 'Underground Eel',      file: 'models/Meshy_AI_underground_eel_0413165509_generate.glb' },
+  { name: 'Mycelial Network',     file: `${PC_BASE}/mycelialNetwork.pc.bin` },
+  { name: 'Chanterelle',          file: `${PC_BASE}/chanterelle.pc.bin` },
+  { name: 'Oyster Mushrooms',     file: `${PC_BASE}/oysterMushrooms.pc.bin` },
+  { name: 'Turquoise Oyster',     file: `${PC_BASE}/turquoiseOyster.pc.bin` },
+  { name: 'Ficus',                file: `${PC_BASE}/ficus.pc.bin` },
+  { name: 'Palm',                 file: `${PC_BASE}/palm.pc.bin` },
+  { name: 'Alocasia',             file: `${PC_BASE}/alocasia.pc.bin` },
+  { name: 'Monstera',             file: `${PC_BASE}/monstera.pc.bin` },
+  { name: 'Trailing Vine',        file: `${PC_BASE}/vine.pc.bin` },
+  { name: 'Elephant Ear',         file: `${PC_BASE}/elephantEar.pc.bin` },
+  { name: 'Mossy Log + Ferns',    file: `${PC_BASE}/mossyLog.pc.bin` },
+  { name: 'Big Root',             file: `${PC_BASE}/bigRoot.pc.bin` },
+  { name: 'Baobab Root',          file: `${PC_BASE}/baobabRoot.pc.bin` },
+  { name: 'Ammonite Fossil',      file: `${PC_BASE}/ammoniteFossil.pc.bin` },
+  { name: 'Pillbug',              file: `${PC_BASE}/pillbug.pc.bin` },
+  { name: 'Blind Fish',           file: `${PC_BASE}/blindFish.pc.bin` },
+  { name: 'Underground Eel',      file: `${PC_BASE}/undergroundEel.pc.bin` },
 ];
 
 const tabsEl = document.getElementById('viewer-tabs');
@@ -1360,60 +1347,64 @@ function resize() {
 }
 window.addEventListener('resize', resize); resize();
 
-let currentDisplay = null, currentModel = null, mode = 'points';
+let currentDisplay = null, currentModel = null;
 const cache = new Map();
-const loader = new GLTFLoader();
-const POINT_SAMPLE_COUNT = 90000;
 const DEFAULT_INDEX = Math.max(0, MODELS.findIndex(m => m.name === 'Mycelial Network'));
 
-function buildPoints(root, size) {
-  root.updateMatrixWorld(true);
-  const meshes = []; let total = 0;
-  root.traverse(o => {
-    if (o.isMesh && o.geometry?.attributes?.position) {
-      const idx = o.geometry.index;
-      const tris = idx ? idx.count / 3 : o.geometry.attributes.position.count / 3;
-      meshes.push({ mesh: o, tris }); total += tris;
-    }
-  });
-  if (!meshes.length) return null;
-  const positions = new Float32Array(POINT_SAMPLE_COUNT * 3);
-  const tmp = new THREE.Vector3();
-  let written = 0;
-  for (const { mesh, tris } of meshes) {
-    const share = Math.max(1, Math.round(POINT_SAMPLE_COUNT * tris / total));
-    let sampler; try { sampler = new MeshSurfaceSampler(mesh).build(); } catch { continue; }
-    for (let i = 0; i < share && written < POINT_SAMPLE_COUNT; i++) {
-      sampler.sample(tmp); tmp.applyMatrix4(mesh.matrixWorld);
-      positions[written * 3] = tmp.x; positions[written * 3 + 1] = tmp.y; positions[written * 3 + 2] = tmp.z;
-      written++;
-    }
+/* Load a .pc.bin (raw Float32, 6 floats per point: x,y,z,r,g,b).
+   Centers on origin, computes bounding sphere, returns { points, size, count }. */
+async function loadPCBin(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${url}`);
+  const buf = await res.arrayBuffer();
+  const raw = new Float32Array(buf);
+  const count = raw.length / 6;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  // Center + bbox in one pass
+  let minX=Infinity, minY=Infinity, minZ=Infinity, maxX=-Infinity, maxY=-Infinity, maxZ=-Infinity;
+  for (let i = 0; i < count; i++) {
+    const x = raw[i*6], y = raw[i*6+1], z = raw[i*6+2];
+    positions[i*3]   = x;
+    positions[i*3+1] = y;
+    positions[i*3+2] = z;
+    colors[i*3]   = raw[i*6+3];
+    colors[i*3+1] = raw[i*6+4];
+    colors[i*3+2] = raw[i*6+5];
+    if (x<minX) minX=x; if (x>maxX) maxX=x;
+    if (y<minY) minY=y; if (y>maxY) maxY=y;
+    if (z<minZ) minZ=z; if (z>maxZ) maxZ=z;
   }
+  const cx = (minX+maxX)/2, cy = (minY+maxY)/2, cz = (minZ+maxZ)/2;
+  for (let i = 0; i < count; i++) {
+    positions[i*3]   -= cx;
+    positions[i*3+1] -= cy;
+    positions[i*3+2] -= cz;
+  }
+  const dx = maxX-minX, dy = maxY-minY, dz = maxZ-minZ;
+  const size = Math.sqrt(dx*dx + dy*dy + dz*dz);
+
   const geom = new THREE.BufferGeometry();
-  geom.setAttribute('position', new THREE.BufferAttribute(positions.slice(0, written * 3), 3));
-  return new THREE.Points(geom, new THREE.PointsMaterial({ size: size / 600, color: 0xc8922a, sizeAttenuation: true }));
+  geom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const mat = new THREE.PointsMaterial({
+    size: size / 600,
+    sizeAttenuation: true,
+    vertexColors: true,
+    transparent: true,
+    opacity: 1.0,
+  });
+  return { points: new THREE.Points(geom, mat), size, count };
 }
 
 function display(entry) {
   if (currentDisplay) scene.remove(currentDisplay);
-  currentDisplay = mode === 'points' ? entry.points : entry.mesh;
+  currentDisplay = entry.points;
   scene.add(currentDisplay);
   const fitDist = entry.size / (2 * Math.tan((Math.PI * camera.fov) / 360));
   camera.position.set(fitDist * 0.7, fitDist * 0.4, fitDist * 0.9);
   controls.target.set(0, 0, 0); controls.update();
-  if (mode === 'points') {
-    const n = entry.points.geometry.getAttribute('position').count;
-    statsEl.textContent = `${n.toLocaleString()} sampled points · drag to orbit · scroll to zoom`;
-  } else {
-    let tri = 0;
-    entry.mesh.traverse(o => {
-      if (o.isMesh) {
-        const idx = o.geometry.index;
-        tri += idx ? idx.count / 3 : o.geometry.getAttribute('position').count / 3;
-      }
-    });
-    statsEl.textContent = `${Math.round(tri).toLocaleString()} triangles · drag to orbit · scroll to zoom`;
-  }
+  statsEl.textContent = `${entry.count.toLocaleString()} points · drag to orbit · scroll to zoom`;
 }
 
 const bgSlider = document.getElementById('bg-slider');
@@ -1439,35 +1430,20 @@ bgSlider.addEventListener('input', e => applyBackground(+e.target.value));
 exposureSlider.addEventListener('input', e => applyExposure(+e.target.value));
 applyBackground(+bgSlider.value); applyExposure(+exposureSlider.value);
 
-function loadModel(model) {
+async function loadModel(model) {
   currentModel = model; nameEl.textContent = model.name;
   if (cache.has(model.file)) { display(cache.get(model.file)); return; }
   loaderEl.style.display = 'flex'; loaderEl.textContent = 'Loading…';
-  loader.load(model.file, gltf => {
-    const root = gltf.scene;
-    const box = new THREE.Box3().setFromObject(root);
-    const center = box.getCenter(new THREE.Vector3());
-    const size = box.getSize(new THREE.Vector3()).length();
-    root.position.sub(center); root.updateMatrixWorld(true);
-    const points = buildPoints(root, size);
-    const entry = { mesh: root, points, size };
+  try {
+    const entry = await loadPCBin(model.file);
     cache.set(model.file, entry);
     if (currentModel === model) display(entry);
     loaderEl.style.display = 'none';
-  }, xhr => {
-    if (xhr.lengthComputable) loaderEl.textContent = `Loading ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
-  }, err => { loaderEl.textContent = 'Failed to load'; console.error(err); });
+  } catch (err) {
+    loaderEl.textContent = 'Failed to load';
+    console.error('loadModel failed:', model.name, err);
+  }
 }
-
-document.querySelectorAll('.mode-toggle button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    if (btn.classList.contains('active')) return;
-    document.querySelectorAll('.mode-toggle button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    mode = btn.dataset.mode;
-    if (currentModel && cache.has(currentModel.file)) display(cache.get(currentModel.file));
-  });
-});
 
 MODELS.forEach((m, i) => {
   const btn = document.createElement('button');
@@ -1485,20 +1461,13 @@ loadModel(MODELS[DEFAULT_INDEX]);
 
 // Site-wide preload: once model 0 is cached, background-load the rest sequentially
 // so the viewer has zero lag when the user reaches the slide.
-function preloadModel(model) {
-  return new Promise(resolve => {
-    if (cache.has(model.file)) return resolve();
-    loader.load(model.file, gltf => {
-      const root = gltf.scene;
-      const box = new THREE.Box3().setFromObject(root);
-      const center = box.getCenter(new THREE.Vector3());
-      const size = box.getSize(new THREE.Vector3()).length();
-      root.position.sub(center); root.updateMatrixWorld(true);
-      const points = buildPoints(root, size);
-      cache.set(model.file, { mesh: root, points, size });
-      resolve();
-    }, undefined, err => { console.warn('preload failed:', model.name, err); resolve(); });
-  });
+async function preloadModel(model) {
+  if (cache.has(model.file)) return;
+  try {
+    cache.set(model.file, await loadPCBin(model.file));
+  } catch (err) {
+    console.warn('preload failed:', model.name, err.message);
+  }
 }
 async function preloadAll() {
   for (let i = 0; i < MODELS.length; i++) {
