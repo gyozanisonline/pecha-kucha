@@ -825,6 +825,23 @@
     color: var(--ink); font-weight: 400;
   }
   .vision .em { color: var(--display); font-weight: 500; }
+  .vision-link {
+    margin-top: clamp(24px, 4vh, 48px);
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    direction: ltr;
+  }
+  .vision-link a {
+    color: var(--display);
+    text-decoration: none;
+    border-bottom: 1px solid var(--line-soft);
+    padding-bottom: 4px;
+    transition: color .2s, border-color .2s;
+  }
+  .vision-link a:hover { color: var(--amber); border-color: var(--amber); }
 
   /* Lorenz weather-machine slide — chaos as a realistic engine */
   .lorenz-intro {
@@ -1322,6 +1339,9 @@
           together with all the organisms with whom we share this world.
         </span>
       </p>
+      <div class="vision-link reveal">
+        <a href="https://www.gyozan.com" target="_blank" rel="noopener">www.gyozan.com</a>
+      </div>
     </div>
   </div>
 </section>
