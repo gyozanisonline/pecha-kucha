@@ -826,6 +826,93 @@
   }
   .vision .em { color: var(--display); font-weight: 500; }
 
+  /* Lorenz weather-machine slide — chaos as a realistic engine */
+  .lorenz-intro {
+    max-width: min(820px, 80vw);
+    margin: 0 auto clamp(20px, 3vh, 32px);
+    text-align: center;
+    font-size: clamp(15px, 1.9vmin, 22px);
+    line-height: 1.65;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .lorenz-intro p + p { margin-top: 0.8em; }
+  .lorenz-block {
+    max-width: min(1100px, 90vw);
+    margin: 0 auto clamp(20px, 3vh, 36px);
+    position: relative;
+    direction: ltr;
+  }
+  #lorenz-canvas {
+    width: 100%;
+    height: clamp(220px, 38vh, 460px);
+    display: block;
+    background: var(--bg);
+    border: 1px solid var(--line-soft);
+  }
+  .lorenz-caption {
+    margin-top: 12px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    direction: ltr;
+  }
+  .lorenz-claims {
+    text-align: center;
+    margin: 0 auto clamp(20px, 3vh, 40px);
+    max-width: min(1100px, 92vw);
+  }
+  .lorenz-claim {
+    font-size: clamp(18px, 2.6vmin, 32px);
+    line-height: 1.4;
+    color: var(--display);
+    font-weight: 300;
+    white-space: nowrap;
+  }
+  .lorenz-claim .sep {
+    color: var(--muted-2);
+    padding: 0 0.5em;
+  }
+  .lorenz-stage {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: clamp(24px, 3vw, 56px);
+    align-items: center;
+    max-width: 1180px;
+    margin: 0 auto clamp(24px, 3vh, 40px);
+    direction: ltr;
+  }
+  @media (max-width: 800px) {
+    .lorenz-stage { grid-template-columns: 1fr; }
+  }
+  .lorenz-stage .lorenz-block {
+    max-width: 100%;
+    margin: 0;
+  }
+  .lorenz-equations {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(8px, 1.2vh, 16px);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: clamp(18px, 2.4vmin, 30px);
+    color: var(--ink);
+    line-height: 1.3;
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+  .lorenz-equations .eq.params {
+    margin-top: 0.6em;
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 0.65em;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+
   /* Footer */
   footer {
     padding: 88px 0 64px; background: #050805;
@@ -998,6 +1085,57 @@
         <img src="images/seminar/src-4-physarum.jpg" alt="Raphael Kay's physarum code rendering">
         <figcaption>Harvard, 2022 · Raphael Kay · physarum in code</figcaption>
       </figure>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SLIDE — Lorenz's Weather Machine
+     Sits between "Organism to Algorithm" and "Brain · Body".
+     Frames MRS as a chaotic system: same rules every time, never the
+     same forest. Live Lorenz attractor traces while the slide is on.
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="slide">
+  <div class="container">
+    <div class="slide-head reveal">
+      <h2><span class="t-he">אדוארד נורטון לורנץ · מכונת מזג האוויר</span><span class="t-en">Edward Norton Lorenz · The Weather Machine</span></h2>
+    </div>
+
+    <div class="lorenz-stage reveal">
+      <div class="lorenz-block">
+        <canvas id="lorenz-canvas" aria-label="Live Lorenz attractor"></canvas>
+        <div class="lorenz-caption">
+          <span class="en">deterministic · never repeating · always recognizable</span>
+        </div>
+      </div>
+      <div class="lorenz-equations">
+        <div class="eq">dx/dt = σ(y − x)</div>
+        <div class="eq">dy/dt = ρx − y − xz</div>
+        <div class="eq">dz/dt = xy − βz</div>
+        <div class="eq params">σ = 10 &nbsp; ρ = 28 &nbsp; β = 8/3</div>
+      </div>
+    </div>
+
+    <div class="lorenz-claims reveal">
+      <p class="lorenz-claim">
+        <span class="t-he">אותם חוקים, אותו יער.</span>
+        <span class="t-en">Same rules, same forest.</span>
+      </p>
+    </div>
+
+    <div class="research-orbit reveal" aria-label="chaos and aliveness research">
+      <div class="orbit-label">chaos &amp; aliveness</div>
+      <div class="orbit-items">
+        <span class="orbit-item primary"><b>Deterministic Nonperiodic Flow</b> · Lorenz · <i>1963</i></span>
+        <span class="orbit-item"><b>The Fractal Geometry of Nature</b> · Mandelbrot · <i>1982</i></span>
+        <span class="orbit-item"><b>At Home in the Universe</b> · Kauffman · <i>1995</i></span>
+        <span class="orbit-item"><b>How Nature Works</b> · Bak · <i>1996</i></span>
+        <span class="orbit-item"><b>Living Architecture</b> · Jacobs &amp; Benford · <i>2013</i></span>
+        <span class="orbit-item"><b>View through a window may influence recovery</b> · Ulrich · <i>1984</i></span>
+        <span class="orbit-item"><b>The Nature of Order</b> · Alexander · <i>2002</i></span>
+        <span class="orbit-item"><b>A Conversation Between Trees</b> · Hoopert · <i>2026</i></span>
+      </div>
     </div>
   </div>
 </section>
@@ -1631,6 +1769,116 @@ function tick() {
   requestAnimationFrame(tick);
 }
 tick();
+
+
+/* ─── Lorenz weather machine ────────────────────────────────────
+   Lorenz '63 attractor. σ=10, ρ=28, β=8/3.
+   Same equations every time, never the same trace. Live.
+   ────────────────────────────────────────────────────────────── */
+{
+  const lCanvas = document.getElementById('lorenz-canvas');
+  if (lCanvas) {
+    const lRenderer = new THREE.WebGLRenderer({ canvas: lCanvas, antialias: true });
+    lRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    lRenderer.setClearColor(0x000000, 1);
+
+    const lScene = new THREE.Scene();
+    const lCam = new THREE.PerspectiveCamera(40, 1, 0.1, 400);
+    lCam.position.set(0, 8, 95);
+    lCam.lookAt(0, 0, 0);
+
+    const MAX_PTS = 9000;
+    const positions = new Float32Array(MAX_PTS * 3);
+    const trailGeom = new THREE.BufferGeometry();
+    trailGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    trailGeom.setDrawRange(0, 0);
+    const trailMat = new THREE.LineBasicMaterial({
+      color: 0x3a7a52, transparent: true, opacity: 0.78,
+    });
+    const trail = new THREE.Line(trailGeom, trailMat);
+
+    const headMat = new THREE.MeshBasicMaterial({ color: 0xc8922a });
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.55, 18, 14), headMat);
+
+    const attractor = new THREE.Group();
+    attractor.add(trail);
+    attractor.add(head);
+    lScene.add(attractor);
+
+    const gridHelper = new THREE.GridHelper(80, 10, 0x1a3820, 0x14241a);
+    gridHelper.position.y = -30;
+    gridHelper.material.transparent = true;
+    gridHelper.material.opacity = 0.55;
+    lScene.add(gridHelper);
+
+    const axesHelper = new THREE.AxesHelper(26);
+    axesHelper.material.transparent = true;
+    axesHelper.material.opacity = 0.5;
+    lScene.add(axesHelper);
+
+    const sigma = 10, rho = 28, beta = 8 / 3;
+    const Z_OFFSET = 25;
+    let x = 0.1, y = 0, z = 0;
+    const dt = 0.006;
+    for (let i = 0; i < 400; i++) {
+      const dx = sigma * (y - x) * dt;
+      const dy = (x * (rho - z) - y) * dt;
+      const dz = (x * y - beta * z) * dt;
+      x += dx; y += dy; z += dz;
+    }
+    let writeIdx = 0;
+    const stepsPerFrame = 6;
+
+    function lResize() {
+      const w = lCanvas.clientWidth, h = lCanvas.clientHeight;
+      if (!w || !h) return;
+      lRenderer.setSize(w, h, false);
+      lCam.aspect = w / h;
+      lCam.updateProjectionMatrix();
+    }
+    window.addEventListener('resize', lResize);
+    lResize();
+
+    let visible = false;
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; }, { threshold: 0.05 })
+      .observe(lCanvas);
+
+    const t0 = performance.now();
+    function lTick() {
+      if (visible) {
+        for (let i = 0; i < stepsPerFrame; i++) {
+          const dx = sigma * (y - x) * dt;
+          const dy = (x * (rho - z) - y) * dt;
+          const dz = (x * y - beta * z) * dt;
+          x += dx; y += dy; z += dz;
+
+          const k = writeIdx % MAX_PTS;
+          positions[k * 3]     = x;
+          positions[k * 3 + 1] = y;
+          positions[k * 3 + 2] = z - Z_OFFSET;
+          writeIdx++;
+        }
+        const count = Math.min(writeIdx, MAX_PTS);
+        if (writeIdx < MAX_PTS) {
+          trailGeom.setDrawRange(0, count);
+        } else {
+          trailGeom.setDrawRange(0, MAX_PTS);
+        }
+        trailGeom.attributes.position.needsUpdate = true;
+
+        head.position.set(x, y, z - Z_OFFSET);
+
+        const t = (performance.now() - t0) * 0.0001;
+        attractor.rotation.y = t * 1.4;
+        attractor.rotation.x = Math.sin(t * 0.8) * 0.12;
+
+        lRenderer.render(lScene, lCam);
+      }
+      requestAnimationFrame(lTick);
+    }
+    lTick();
+  }
+}
 </script>
 
 </body>
